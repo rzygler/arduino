@@ -3,7 +3,7 @@
 
 static const int DHT_SENSOR_PIN = 2;
 DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
-
+static const boolean serialPlotting = false;
 
 /*
  * Initialize the serial port.
@@ -48,10 +48,18 @@ void loop( )
   if( measure_environment( &temperature, &humidity ) == true )
   {
     tempF = ((temperature * 9) / 5) + 32;
-    Serial.print( "T = " );
-    Serial.print( tempF, 1 );
-    Serial.print( " deg. C, H = " );
-    Serial.print( humidity, 1 );
-    Serial.println( "%" );
+    if (serialPlotting)
+    {
+      Serial.print( tempF, 1 );
+      Serial.print("\t");
+      Serial.println( humidity, 1 );
+    } else
+    {
+      Serial.print( "T = " );
+      Serial.print( tempF, 1 );
+      Serial.print( " deg. C, H = " );
+      Serial.print( humidity, 1 );
+      Serial.println( "%" );
+    }
   }
 }
