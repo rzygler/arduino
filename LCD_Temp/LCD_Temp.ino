@@ -1,11 +1,13 @@
 #include <LiquidCrystal.h>
 #include <dht_nonblocking.h>
+
 #define DHT_SENSOR_TYPE DHT_TYPE_11
+#define FAN_PIN 5
 
 static const int DHT_SENSOR_PIN = 2;
 DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE );
 static const boolean serialPlotting = false;
-static const boolean serialLogging = false;
+static const boolean serialLogging = true;
 
 
 /*
@@ -64,7 +66,8 @@ void setup() {
   // Print a message to the LCD.
   //lcd.print("Hello World!");
 
-  
+  pinMode(FAN_PIN, OUTPUT);
+  digitalWrite(FAN_PIN, LOW);
 }
 
 void loop() {
@@ -74,7 +77,9 @@ void loop() {
   // print the number of seconds since reset:
   // lcd.print(millis() / 1000);
 
+  // unsigned long currentMillis = millis();
   doMeasurements();
+  
 }
 
 void doMeasurements()
@@ -88,6 +93,15 @@ void doMeasurements()
   if( measure_environment( &temperature, &humidity ) == true )
   {
     tempF = ((temperature * 9) / 5) + 32;
+
+    if (tempF >= 80)
+    {
+      digitalWrite(FAN_PIN, HIGH);
+    }
+    else
+    {
+      digitalWrite(FAN_PIN, LOW);
+    }
 
     lcd.setCursor(0,0);
     lcd.print("temp: ");
@@ -110,7 +124,8 @@ void doMeasurements()
       Serial.print( tempF, 1 );
       Serial.print( " deg. C, H = " );
       Serial.print( humidity, 1 );
-      Serial.println( "%" );
+      Serial.print( "%" );
+      Serial.println("");
     }
   }
   
